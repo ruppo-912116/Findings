@@ -72,3 +72,7 @@ Possible scenarios:
 5. What happens when a message is deleted from the queue? - For example, The retention was for 3 hours, then the time passes, how is the offset being handled on both sides?
 
 - If any consumer starts after the retention period, messages will be consumed as per auto.offset.reset configuration which could be latest/earliest. Technically, it's latest (start processing new messages), because all the messages got expired by that time and retention is a topic-level configuration.
+
+5. If i need to consume same messages in two consumers, how do we do it?
+
+- Remember, consumer group is used for parallelism. the group does the same thing. not including the consumers on the same group will do the trick.
