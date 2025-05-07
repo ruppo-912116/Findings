@@ -21,7 +21,7 @@ Something goes wrong inside that lambda (e.g. exception)
 
 Spring Security tries to handle the exception, but the response is already committed → 💥 you get:
 
-
+```
 Client HTTP → Servlet Container
      │
      ▼  (DispatcherType.REQUEST)
@@ -42,6 +42,8 @@ Controller returns StreamingResponseBody
         Spring Security sees no auth → throws AccessDenied
           │
         ExceptionTranslationFilter tries to send 401 → fails (already committed)
+
+```
 
 
 
