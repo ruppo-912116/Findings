@@ -21,6 +21,31 @@ Something goes wrong inside that lambda (e.g. exception)
 
 Spring Security tries to handle the exception, but the response is already committed → 💥 you get:
 
+
+Client HTTP → Servlet Container
+     │
+     ▼  (DispatcherType.REQUEST)
+[Filter chain: JwtRequestFilter runs → SecurityContextHolder populated]
+     │
+     ▼
+Controller returns StreamingResponseBody
+     │
+     └─> Container starts async, frees servlet thread
+          │
+          ▼  (DispatcherType.ASYNC, on background thread)
+        [Filter chain: JwtRequestFilter does NOT run by default]
+          │
+        Controller’s StreamingResponseBody writes bytes
+          │
+        Headers auto‐flushed → response committed
+          │
+        Spring Security sees no auth → throws AccessDenied
+          │
+        ExceptionTranslationFilter tries to send 401 → fails (already committed)
+
+
+
+
 ## DispatcherServlet
 Simply put, in the Front Controller design pattern, a single controller is responsible for directing incoming HttpRequests to all of an application’s other controllers and handlers.
 Spring’s DispatcherServlet implements this pattern and is, therefore, responsible for correctly coordinating the HttpRequests to their right handlers.
